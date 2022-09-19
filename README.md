@@ -3,7 +3,7 @@ Repository for skin lesion classification task
 
 
 ## Setup:
-### Clone the repository 
+### Clone the repository
 ```
 git clone https://github.com/pavelg0t/skin-lesion-classification.git
 cd skin-lesion-classification/
@@ -27,11 +27,11 @@ pip install kaggle
 ```
 Create an API Token:
 Go to (`https://www.kaggle.com/<username>/account`) and select 'Create New API Token'.
-Then move this JSON file to `~/.kaggle/kaggle.json`: 
+Then move this JSON file to `~/.kaggle/kaggle.json`:
 ```
 mv <path_to_file>/kaggle.json ~/.kaggle/kaggle.json
 ```
-To ensure that other computer users do not have read access to your credentials: 
+To ensure that other computer users do not have read access to your credentials:
 ```
 chmod 600 ~/.kaggle/kaggle.json
 ```

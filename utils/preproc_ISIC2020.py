@@ -1,13 +1,15 @@
 import argparse
 import json
-import pandas as pd
 import os
+
+import pandas as pd
+
 
 def create_category_map():
 
     df = pd.read_csv(args.train_gt)
     df = df[['image_name', 'target']]
-    df = df.to_json(orient="values")
+    df = df.to_json(orient='values')
     df = json.loads(df)
     df = dict(df)
 
@@ -17,9 +19,10 @@ def create_category_map():
     with open(dest_filename, 'w') as f:
         json.dump(df, f, indent=4)
 
+
 def create_duplicates_json():
     df = pd.read_csv(args.train_dupl)
-    df = df.to_json(orient="values")
+    df = df.to_json(orient='values')
     df = json.loads(df)
     df = dict(df)
 
@@ -34,20 +37,19 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-      '--train_gt',
-      type=str,
-      default=None, #required
-      help='Training data ground truth CSV file path'
+        '--train_gt',
+        type=str,
+        default=None,  # required
+        help='Training data ground truth CSV file path',
     )
     parser.add_argument(
-      '--train_dupl',
-      type=str,
-      default=None, #required
-      help='Training data duplicates CSV file path'
+        '--train_dupl',
+        type=str,
+        default=None,  # required
+        help='Training data duplicates CSV file path',
     )
 
     args, unparsed = parser.parse_known_args()
 
     create_category_map()
     create_duplicates_json()
-
