@@ -7,3 +7,6 @@ venv/
 #Python 3 bytecode
 utils/__pycache__/
 *.pyc
+
+#IPython for testing purposes
+test*.ipynb

@@ -16,7 +16,7 @@ from utils.datasets import ISIC2020
 from utils.datasets import TrainDataset
 
 
-def get_tim_model(m_name, pretrained, num_classes):
+def get_timm_model(m_name, pretrained, num_classes):
 
     model = timm.create_model(m_name, pretrained, num_classes)
     data_config = resolve_data_config({}, model=model)
@@ -37,7 +37,7 @@ def train_isic2020():
     )
 
     # get timm model
-    bb_model, transform, inpt_dim = get_tim_model(
+    bb_model, transform, inpt_dim = get_timm_model(
         m_name=train_args.m_name,
         pretrained=True,
         num_classes=train_args.n_class,
@@ -93,7 +93,6 @@ def train_isic2020():
 
             # forward + backward + optimize
             outputs = bb_model(image_batch)
-
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
@@ -102,7 +101,8 @@ def train_isic2020():
             running_loss += loss.item()
 
             print_freq = math.ceil(n_mini_batch/10)
-            if i % print_freq == (print_freq-1):    # print every 20 mini-batches
+            # print every 10% of the mini-batches
+            if i % print_freq == (print_freq-1):
                 print(
                     f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / print_freq:.3f}',
                 )

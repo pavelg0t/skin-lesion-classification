@@ -3,29 +3,30 @@ Repository for skin lesion classification task
 
 
 ## Setup:
-### Clone the repository
+**Clone the repository**
 ```
 git clone https://github.com/pavelg0t/skin-lesion-classification.git
 cd skin-lesion-classification/
 ```
 
-### Setup virtual environment with `venv`
+**Setup virtual environment with `venv`**
 ```
 python3 -m venv venv
 source venv/bin/activate
 ```
-### Install necessary packages (Python version used: `Python 3.8.10`)
+**Install necessary packages (Python version used: `Python 3.8.10`)**
 ```
 pip install -r requirements.txt
 ```
 
 ## Download the data (via Kaggle)
-### Set up [Kaggle API CLI](https://github.com/Kaggle/kaggle-api):
+**Set up [Kaggle API CLI](https://github.com/Kaggle/kaggle-api)**
 Install the pip package (if not already installed with the requirements.txt file)
 ```
 pip install kaggle
 ```
-Create an API Token:
+**Create an API Token**
+
 Go to (`https://www.kaggle.com/<username>/account`) and select 'Create New API Token'.
 Then move this JSON file to `~/.kaggle/kaggle.json`:
 ```
@@ -36,13 +37,14 @@ To ensure that other computer users do not have read access to your credentials:
 chmod 600 ~/.kaggle/kaggle.json
 ```
 
-### Download preprocess the datasets:
-#### HAM10000
+**Download the datasets**
+
+**HAM10000**
 ```
 kaggle datasets download -p data/HAM10000 --unzip kmader/skin-cancer-mnist-ham10000
 ```
 
-#### ISIC2020
+**ISIC2020**
 ```
 kaggle datasets download -p data/ISIC2020 --unzip mnowak061/isic2020-384x384-jpeg
 wget -O data/ISIC2020/ISIC_2020_Training_GroundTruth_v2.csv https://isic-challenge-data.s3.amazonaws.com/2020/ISIC_2020_Training_GroundTruth_v2.csv
@@ -52,7 +54,7 @@ python3 utils/preproc_ISIC2020.py --train_gt data/ISIC2020/ISIC_2020_Training_Gr
 ```
 
 ## Train
-### binary classification with timm model (xcit nano)
+**Binary classification with timm model (xcit nano)**
 ```
 python3 train.py --train_path data/ISIC2020/ISIC2020_384x384_jpeg/train --labels_path data/ISIC2020/ISIC2020_train_map.json --m_name xcit_nano_12_p16_224  --num_workers 4 --batch_size 8 --n_epoch 2 --n_class 2
 ```
