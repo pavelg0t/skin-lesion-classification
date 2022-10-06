@@ -5,8 +5,16 @@ data/*
 venv/
 
 #Python 3 bytecode
-utils/__pycache__/
+dataset/__pycache__/
+model/__pycache__/
 *.pyc
 
 #IPython for testing purposes
 test*.ipynb
+
+#personal notes
+TODO.txt
+TODO.md
+
+#Weight and Biases metadata folder
+wandb/*

@@ -1,176 +1,157 @@
 import argparse
 import math
 import time
+from datetime import datetime
 
 import numpy as np
-import timm
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from PIL import Image
-from timm.data import resolve_data_config
-from timm.data.transforms_factory import create_transform
 from tqdm import tqdm
 
-from utils.datasets import ISIC2020
-from utils.datasets import TrainDataset
+import wandb
+from dataset import DatasetFactory, TransformFactory
+from model import ModelFactory
+from utils.validate import ValidateDatasetName
+from utils.validate import ValidateModelName
+from utils.validate import ValidateTransformType
 
 
-def get_timm_model(m_name, pretrained, num_classes):
-
-    model = timm.create_model(m_name, pretrained, num_classes)
-    data_config = resolve_data_config({}, model=model)
-    transform = create_transform(**data_config)
-    inpt_dim = data_config['input_size'][-1]
-
-    return model, transform, inpt_dim
-
-
-def train_isic2020():
+def run_training(config):
 
     use_cuda = torch.cuda.is_available()
     device = torch.device('cuda:0' if use_cuda else 'cpu')
 
-    # parse ISIC2020 filenames
-    isic2020_data = ISIC2020(
-        base_dir=train_args.train_path, labels_path=train_args.labels_path,
+    transform = TransformFactory.create_transform(
+        t_type=config.transform, m_name=config.m_name)
+
+    dataset = DatasetFactory.create_dataset(
+        name=config.dataset, preproc=transform,
     )
-
-    # get timm model
-    bb_model, transform, inpt_dim = get_timm_model(
-        m_name=train_args.m_name,
-        pretrained=True,
-        num_classes=train_args.n_class,
-    )
-
-    # Preprocessing that will be run on each individuall train image
-
-    def ppc_image(path):
-        with open(path, 'rb') as f:
-            img = Image.open(f)
-            img = img.convert('RGB')
-
-        return transform(img)
-
-    # dataloader parameters
-    params = {
-        'batch_size': train_args.batch_size,
-        'shuffle': True,
-        'num_workers': train_args.num_workers,
-    }
 
     data_loader = torch.utils.data.DataLoader(
-        TrainDataset(
-            file_paths=isic2020_data.image_files,
-            labels=isic2020_data.image_categories,
-            preproc=ppc_image,
-        ),
-        **params,
+        dataset,
+        batch_size=config.batch_size,
+        shuffle=True,
+        num_workers=config.num_workers,
     )
 
-    bb_model.to(device)
+    model = ModelFactory.create_model(
+        name=config.m_name, n_class=dataset.n_class,
+    )
+    model.to(device)
+
+    # It should be parametrized!!!!!!!!!!!!!!!!!!!!!
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(bb_model.parameters(), lr=0.001, momentum=0.9)
+    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     # some addtional info
     time_start = time.time()
 
     # with torch.set_grad_enabled(True):
-    for epoch in range(train_args.n_epoch):
+    for epoch in range(config.n_epoch):
 
         running_loss = 0.0
         n_mini_batch = math.ceil(
-            len(isic2020_data.image_files) / train_args.batch_size,
+            len(dataset.image_files) / config.batch_size,
         )
 
         for i, local_batch in tqdm(enumerate(data_loader), leave=True, total=n_mini_batch):
 
             image_batch = local_batch['image'].to(device)
-            labels = local_batch['label']
+            category = local_batch['category']
 
             # zero the parameter gradients
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs = bb_model(image_batch)
-            loss = criterion(outputs, labels)
+            outputs = model(image_batch)
+            loss = criterion(outputs, category)
             loss.backward()
             optimizer.step()
 
             # print statistics
             running_loss += loss.item()
 
-            print_freq = math.ceil(n_mini_batch/10)
+            print_freq = math.ceil(n_mini_batch/100)
             # print every 10% of the mini-batches
             if i % print_freq == (print_freq-1):
-                print(
-                    f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / print_freq:.3f}',
+                metrics = {
+                    'train/epoch': (i + 1 + (epoch * n_mini_batch)) / n_mini_batch,
+                    'train/running_loss': running_loss / print_freq,
+                    'train/example_ct': print_freq,
+                }
+                # print(
+                #     f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / print_freq:.3f}',
                 )
-                running_loss = 0.0
+                wandb.log(metrics)
+                running_loss=0.0
 
-    time_needed = np.round((time.time() - time_start), 2)
-    m_params = sum(
+    time_needed=np.round((time.time() - time_start), 2)
+    m_params=sum(
         torch.tensor(param.shape).prod()
-        for param in bb_model.parameters()
+        for param in model.parameters()
     )
 
     # print metadata
     print(f'test time: {time_needed}')
-    print(f'input size: {inpt_dim}')
+    # print(f'input size: {inpt_dim}')
     print(f'model params: {m_params}')
 
 
-def main():
+def main(args):
 
-    train_isic2020()
+    # login to wandb
+    wandb.login()
+
+    # initialise a wandb run
+    wandb.init(
+        project = args.prj_name,
+        name = f'run-{datetime.now()}'.replace(' ', '-'),
+        config = {k: v for k, v in vars(args).items() if k != 'prj_name'},
+    )
+
+    # Copy your config
+    config=wandb.config
+
+    run_training(config)
+
+    wandb.finish()
 
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser()
+    parser=argparse.ArgumentParser()
 
     parser.add_argument(
-        '--train_path',
-        type=str,
-        default=None,  # required
-        help='Train data path',
+        'prj_name', type = str,
+        help = 'Weights and Biases project name',
     )
     parser.add_argument(
-        '--labels_path',
-        type=str,
-        default=None,  # required
-        help='Labels JOSN file path',
+        '--m_name', action = ValidateModelName, required = True,
+        help = 'Model name',
     )
     parser.add_argument(
-        '--m_name',
-        type=str,
-        default=None,  # required
-        help='Model name',
+        '--dataset', action = ValidateDatasetName, required = True,
+        help = 'Dataset Name',
     )
     parser.add_argument(
-        '--num_workers',
-        type=int,
-        default=4,
-        help='Number of workers used for data preprocessing',
+        '--transform', action = ValidateTransformType, required = True,
+        help = 'Data pre-processing type',
     )
     parser.add_argument(
-        '--batch_size',
-        type=int,
-        default=4,
-        help='Batch size',
+        '--num_workers', type = int, default = 4,
+        help = 'Number of workers used for data preprocessing',
     )
     parser.add_argument(
-        '--n_epoch',
-        type=int,
-        default=20,
-        help='Number of epochs to run',
+        '--batch_size', type = int, default = 4,
+        help = 'Batch size',
     )
     parser.add_argument(
-        '--n_class',
-        type=int,
-        default=2,
-        help='Number of data classes',
+        '--n_epoch', type = int, default = 20,
+        help = 'Number of epochs to run',
     )
 
-    train_args, unparsed = parser.parse_known_args()
-    main()
+    args=parser.parse_args()
+    main(args)

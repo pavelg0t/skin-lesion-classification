@@ -18,6 +18,13 @@ source venv/bin/activate
 ```
 pip install -r requirements.txt
 ```
+## Setup WandB for experiment tracking
+Install the pip package (if not already installed with the requirements.txt file)
+```
+pip install wandb --upgrade
+wandb login
+```
+Go to https://wandb.ai/authorize, login, copy the key and paste it in the terminal. The API key will be automatically saved to `/home/<user>/.netrc`.
 
 ## Download the data (via Kaggle)
 **Set up [Kaggle API CLI](https://github.com/Kaggle/kaggle-api)**
@@ -46,17 +53,13 @@ kaggle datasets download -p data/HAM10000 --unzip kmader/skin-cancer-mnist-ham10
 
 **ISIC2020**
 ```
-kaggle datasets download -p data/ISIC2020 --unzip mnowak061/isic2020-384x384-jpeg
-wget -O data/ISIC2020/ISIC_2020_Training_GroundTruth_v2.csv https://isic-challenge-data.s3.amazonaws.com/2020/ISIC_2020_Training_GroundTruth_v2.csv
-wget -O data/ISIC2020/ISIC_2020_Training_Duplicates.csv https://isic-challenge-data.s3.amazonaws.com/2020/ISIC_2020_Training_Duplicates.csv
-wget -O data/ISIC2020/ISIC_2020_Test_Metadata.csv https://isic-challenge-data.s3.amazonaws.com/2020/ISIC_2020_Test_Metadata.csv
-python3 utils/preproc_ISIC2020.py --train_gt data/ISIC2020/ISIC_2020_Training_GroundTruth_v2.csv --train_dupl data/ISIC2020/ISIC_2020_Training_Duplicates.csv
+bash setup_isic2020.sh
 ```
 
 ## Train
 **Binary classification with timm model (xcit nano)**
 ```
-python3 train.py --train_path data/ISIC2020/ISIC2020_384x384_jpeg/train --labels_path data/ISIC2020/ISIC2020_train_map.json --m_name xcit_nano_12_p16_224  --num_workers 4 --batch_size 8 --n_epoch 2 --n_class 2
+python3 train.py First_Project --m_name xcit_nano_12_p16_224 --dataset ISIC2020 --transform custom1 --num_workers 4 --batch_size 8 --n_epoch 2
 ```
 
 
