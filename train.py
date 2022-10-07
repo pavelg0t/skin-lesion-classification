@@ -63,7 +63,7 @@ def run_training(config):
         ):
 
             image_batch = local_batch['image'].to(device)
-            category = local_batch['category']
+            category = local_batch['category'].to(device)
 
             # zero the parameter gradients
             optimizer.zero_grad()

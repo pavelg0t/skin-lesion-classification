@@ -1,6 +1,7 @@
 #!/bin/bash
 # STEP 1: Export ENV VARs
-shellcheck source .config
+# shellcheck source=/dev/null
+source .config
 
 # STEP 2: Download data via Kaggle API CLI
 kaggle datasets download -p "$ISIC2020_BASE_FOLDER" --unzip mnowak061/isic2020-384x384-jpeg
