@@ -1,11 +1,13 @@
 from typing import Any
-from .factory import TransformBase, TransformFactory
 
-from PIL import Image
 import timm
+from PIL import Image
 from timm.data import resolve_data_config
 from timm.data.transforms_factory import create_transform
 from torchvision.transforms import ToTensor
+
+from .factory import TransformBase
+from .factory import TransformFactory
 
 
 @TransformFactory.register('timm_original')

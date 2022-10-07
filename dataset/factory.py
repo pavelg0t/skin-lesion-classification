@@ -56,7 +56,8 @@ class DatasetFactory:
     @classmethod
     def is_dataset(cls, name: str) -> bool:
         """ Factory command to check if a particular dataset exists.
-        This method checks if a particular dataset class exists in the registry.
+        This method checks if a particular dataset class exists in
+        the registry.
         Args:
             name (str): The name of the dataset to create.
         Returns:
@@ -74,7 +75,8 @@ class TransformFactory:
 
     @classmethod
     def register(cls, t_type: str) -> Callable:
-        """ Class method to register transform steps class to the internal registry.
+        """ Class method to register transform steps class to the
+            internal registry.
         Args:
             t_type (str): The type of the transform steps.
         Returns:
@@ -116,7 +118,8 @@ class TransformFactory:
     @classmethod
     def is_transform(cls, t_type: str) -> bool:
         """ Factory command to check if a particular transform exists.
-        This method checks if a particular transform class exists in the registry.
+        This method checks if a particular transform class exists in
+        the registry.
         Args:
             t_type (str): The type of the transform to create.
         Returns:

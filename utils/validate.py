@@ -11,7 +11,10 @@ from model.factory import ModelFactory
 class ValidateModelName(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
 
-        if (values not in timm.list_models()) and (not ModelFactory.is_model(values)):
+        is_timm_model = values in timm.list_models()
+        is_custom_model = ModelFactory.is_model(values)
+
+        if (not is_timm_model) and (not is_custom_model):
             parser.error(f'Please enter a valid model name. Got: {values}')
         setattr(namespace, self.dest, values)
 

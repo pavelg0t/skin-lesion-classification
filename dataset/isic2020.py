@@ -78,7 +78,8 @@ class ISIC2020(Dataset):
     @property
     def image_files(self):
         """
-        List of image files. The order of the list is important for other methods.
+        List of image files. The order of the list is important
+        for other methods.
 
         Returns
         -------
@@ -90,7 +91,8 @@ class ISIC2020(Dataset):
     @property
     def image_categories(self):
         """
-        List of image categories. The order of the list is important for other methods.
+        List of image categories. The order of the list is important
+        for other methods.
 
         Returns
         -------

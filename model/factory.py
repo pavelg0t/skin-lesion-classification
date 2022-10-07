@@ -51,17 +51,21 @@ class ModelFactory:
         elif name in timm.list_models():
             pretrained = kwargs.get('pretrained', True)
             n_class = kwargs.get('n_class')
-            return timm.create_model(name, pretrained=pretrained, num_classes=n_class)
+            return timm.create_model(
+                name, pretrained=pretrained, num_classes=n_class,
+            )
         else:
             logger.warning(
-                'Model %s does not exist in the registry nor timm library', name,
+                'Model %s does not exist in the registry nor timm library',
+                name,
             )
             return None
 
     @classmethod
     def is_model(cls, name: str) -> bool:
         """ Factory command to check if a particular nn model exists.
-        This method checks if a particular nn model class exists in the registry.
+        This method checks if a particular nn model class exists in
+        the registry.
         Args:
             name (str): The name of the nn model to create.
         Returns:
