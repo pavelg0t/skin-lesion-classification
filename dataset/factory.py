@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 class DatasetFactory:
     """ The factory class for creating datasets"""
 
+    # Internal registry for available datasets
     registry = {}
-    """ Internal registry for available datasets """
 
     @classmethod
     def register(cls, name: str) -> Callable:
@@ -69,8 +69,8 @@ class DatasetFactory:
 class TransformFactory:
     """ The factory class for creating image pre-processing steps"""
 
+    # Internal registry for available image transform steps
     registry = {}
-    """ Internal registry for available image transform steps """
 
     @classmethod
     def register(cls, t_type: str) -> Callable:

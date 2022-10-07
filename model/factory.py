@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 class ModelFactory:
     """ The factory class for creating nn models"""
 
+    # Internal registry for available nn models
     registry = {}
-    """ Internal registry for available nn models """
 
     @classmethod
     def register(cls, name: str) -> Callable:
