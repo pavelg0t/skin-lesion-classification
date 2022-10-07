@@ -18,6 +18,15 @@ source venv/bin/activate
 ```
 pip install -r requirements.txt
 ```
+
+## Setup pre-commit hooks
+```
+pre-commit install
+```
+Initially run the `pre-commit` hooks on all of the files in the repo:
+```
+pre-commit run --all-files
+```
 ## Setup WandB for experiment tracking
 Install the pip package (if not already installed with the requirements.txt file)
 ```
