@@ -28,7 +28,7 @@ def run_training(config):
     )
 
     dataset = DatasetFactory.create_dataset(
-        name=config.dataset, preproc=transform,
+        config.dataset, preproc=transform,
     )
 
     data_loader = torch.utils.data.DataLoader(

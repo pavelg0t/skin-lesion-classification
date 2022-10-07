@@ -25,7 +25,7 @@ class TimmTransform(TransformBase):
 
         return self.timm_transform(img)
 
-    def _get_timm_transform(m_name):
+    def _get_timm_transform(self, m_name):
 
         model = timm.create_model(m_name)
         data_config = resolve_data_config({}, model=model)
