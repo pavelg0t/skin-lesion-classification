@@ -74,7 +74,7 @@ bash setup_isic2020.sh
 ## Train
 **Binary classification with timm model (xcit nano)**
 ```
-python3 train.py First_Project --m_name xcit_nano_12_p16_224 --dataset ISIC2020 --multiclass false --transform timm_original --num_workers 4 --batch_size 8 --n_epoch 2
+python3 train.py First_Project --m_name xcit_nano_12_p16_224 --dataset ISIC2020 --transform timm_original --num_workers 4 --batch_size 8 --n_epoch 2
 ```
 
 

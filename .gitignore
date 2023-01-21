@@ -18,3 +18,6 @@ TODO.md
 
 #Weight and Biases metadata folder
 wandb/*
+
+#iPython checkpoints
+.ipynb_checkpoints/
